@@ -93,15 +93,64 @@ CREATE PROCEDURE view_appointments(IN id INT)
   SELECT * FROM Appointment WHERE PatientID = id ORDER BY Time;
 END//
 
+CREATE PROCEDURE schedule_appointment(IN patient_id INT, IN physician_id INT, IN time DATETIME, IN description TEXT)
+  IF description IS NOT NULL THEN
+    INSERT INTO Description (FreeFormText) VALUES (description);
+    INSERT INTO Appointment (PhysicianID, PatientID, Time, DescriptionID) VALUES (physician_id, patient_id, time, LAST_INSERT_ID());
+  ELSE
+    INSERT INTO Appointment (PhysicianID, PatientID, Time) VALUES (physician_id, patient_id, time);
+  END IF;
+END//
+
 CREATE PROCEDURE cancel_appointment(IN appointment_id INT)
   SET @desc_id = SELECT DescriptionID FROM Appointment WHERE AppointmentID = appointment_id;
   DELETE FROM Description WHERE DescriptionID = @desc_id;
   DELETE FROM Appointment WHERE AppointmentID = appointment_id;
 END//
 
-CREATE PROCEDURE write_exam_note(IN note TEXT, empl_id, patient_id)
+CREATE PROCEDURE write_exam_note(IN note TEXT, IN empl_id INT, IN patient_id INT)
   INSERT INTO Description (FreeFormText) VALUES (note);
   INSERT INTO MedicalRecord (EmplID, PatientID, DescriptionID) VALUES (empl_id, patient_id, LAST_INSERT_ID());
+END//
+
+CREATE PROCEDURE create_disease_thread(IN patient_id INT, IN empl_id INT, IN symptom_id INT, IN treatment_id INT, IN description TEXT)
+  IF description IS NOT NULL THEN
+    INSERT INTO Description (FreeFormText) VALUES (description);
+    INSERT INTO MedicalRecord (EmplID, PatientID, SymptID, Trtmnt_ID, DescriptionID) VALUES (empl_id, patient_id, symptom_id, treatment_id, LAST_INSERT_ID());
+  ELSE
+    INSERT INTO MedicalRecord (EmplID, PatientID, SymptID, Trtmnt_ID) VALUES (empl_id, patient_id, symptom_id, treatment_id);
+  END IF;
+END//
+
+CREATE PROCEDURE view_medical_history(IN patient_id INT)
+  SELECT * FROM MedicalRecord WHERE PatientID = patient_id ORDER BY Timestamp;
+END//
+
+CREATE PROCEDURE view_prescription_history(IN patient_id INT)
+  SELECT * FROM MedicalRecord WHERE PatientID = patient_id AND RxNumber IS NOT NULL ORDER BY Timestamp;
+END//
+
+CREATE PROCEDURE view_account_balance(IN patient_id INT)
+  SELECT Balance FROM Account NATURAL JOIN User WHERE UserID = patient_id;
+END//
+
+CREATE PROCEDURE make_payment(IN amount DECIMAL(16, 2), IN patient_id INT)
+  SET @account_id = SELECT AccountID FROM User WHERE UserID = patient_id;
+  INSERT INTO Transactions (PatientID, TransactionType, Amount) VALUES (patient_id, 0, amount);
+  UPDATE Account SET Balance = Balance - amount WHERE AccountID = @account_id;
+END//
+
+CREATE PROCEDURE schedule_lab_test(IN patient_id INT, IN physician_id INT, IN time DATETIME, IN description TEXT)
+  IF description IS NOT NULL THEN
+    INSERT INTO Description (FreeFormText) VALUES (description);
+    INSERT INTO Appointment (PhysicianID, PatientID, Time, DescriptionID) VALUES (physician_id, patient_id, time, LAST_INSERT_ID());
+  ELSE
+    INSERT INTO Appointment (PhysicianID, PatientID, Time) VALUES (physician_id, patient_id, time);
+  END IF;
+END//
+
+CREATE PROCEDURE change_password(IN user_id INT, IN password VARCHAR(255))
+  UPDATE User SET Password = password WHERE UserID = user_id;
 END//
 
 delimiter ;
