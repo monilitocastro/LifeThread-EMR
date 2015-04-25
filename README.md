@@ -24,8 +24,4 @@ If multiple post backs are needed for index.php, it is apt to set a cookie varia
 to keep track of the state. Use model classes toCookie and fromCookie method
 to facilitate this.
 
-Calendar program is modified from cal.php which is an open source
-calendar php rendering program. It has been modified to include
-radio buttons, next and previous months button. Original repository is located at https://github.com/Goatella/PHP-Calendar
-
 
