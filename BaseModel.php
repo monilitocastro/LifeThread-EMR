@@ -13,15 +13,24 @@ class BaseModel{
   }
   return FALSE;
  }
- public function connectToDB($servername="localhost",$username, $password){
+ public function signUpNewUser($UserType, $Name, $Username, $Password, $Address){
+ 
+ $queryString = <<< EOT
+INSERT INTO User($UserType, $Name, $Username, $Password, $Address);
+EOT;
+ $result = $this->conn->mysql_query($queryString);
+ }
+ public function connectToDB($servername="localhost",$username="root", $password=""){
+  echo"<br>MYSQL PRECONNECT PASS";
   $this->servername = $servername;
   // Create connection
   $this->conn = new mysql_connect($this->servername, $username, $password);
-
+  echo"<br>MYSQL CONNECT PASS";
   // Check connection
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
   }
+  $result = $this->conn->mysql_query("use LifeThread;");
  }
  public function closeDBConnection(){
   $this->conn->close();

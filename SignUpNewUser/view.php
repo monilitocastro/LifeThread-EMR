@@ -11,9 +11,9 @@ class View
     public function controls(){
      $lit = <<<EOT
 Name:    <input type='textbox' name='Name'><br/>
-Username: <input type='textbox' name='Name'><br/>
-Password: <input type='textbox' name='Name'><br/>
-Address:  <input type='textbox' name='Name'><br/>
+Username: <input type='textbox' name='Username'><br/>
+Password: <input type='password' name='Password'><br/>
+Address:  <input type='textbox' name='Address'><br/>
 EOT;
      return "Please fill in the information:<BR/><BR/>".$lit;
     }
