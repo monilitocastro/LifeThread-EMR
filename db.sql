@@ -82,13 +82,13 @@ DELIMITER //
 CREATE PROCEDURE sign_up_patient(IN name VARCHAR(255), IN username VARCHAR(255), IN password VARCHAR(255), IN address VARCHAR(255))
 BEGIN
   INSERT INTO Account (Delinquency, Balance) VALUES (0, 0);
-  INSERT INTO User (Type, Name, Username, Password, Address, AccountID) VALUES ('Patient', name, username, password, address, LAST_INSERT_ID());
+  INSERT INTO User (UserType, Name, Username, Password, Address, AccountID) VALUES ('Patient', name, username, password, address, LAST_INSERT_ID());
 END//
 
 CREATE PROCEDURE sign_up_caregiver(IN usertype VARCHAR(50), IN name VARCHAR(255), IN username VARCHAR(255), IN password VARCHAR(255), IN address VARCHAR(255))
 BEGIN
   INSERT INTO Account (Delinquency, Balance) VALUES (0, 0);
-  INSERT INTO User (Type, Name, Username, Password, Address, AccountID) VALUES (usertype, name, username, password, address, LAST_INSERT_ID());
+  INSERT INTO User (UserType, Name, Username, Password, Address, AccountID) VALUES (usertype, name, username, password, address, LAST_INSERT_ID());
 END//
 
 CREATE PROCEDURE view_appointments(IN id INT)
@@ -108,7 +108,7 @@ END//
 
 CREATE PROCEDURE cancel_appointment(IN appointment_id INT)
 BEGIN
-  SET @desc_id = SELECT DescriptionID FROM Appointment WHERE AppointmentID = appointment_id;
+  SELECT DescriptionID INTO @desc_id FROM Appointment WHERE AppointmentID = appointment_id;
   DELETE FROM Description WHERE DescriptionID = @desc_id;
   DELETE FROM Appointment WHERE AppointmentID = appointment_id;
 END//
@@ -146,7 +146,7 @@ END//
 
 CREATE PROCEDURE make_payment(IN amount DECIMAL(16, 2), IN patient_id INT)
 BEGIN
-  SET @account_id = SELECT AccountID FROM User WHERE UserID = patient_id;
+  SELECT AccountID INTO @account_id FROM User WHERE UserID = patient_id;
   INSERT INTO Transactions (PatientID, TransactionType, Amount) VALUES (patient_id, 0, amount);
   UPDATE Account SET Balance = Balance - amount WHERE AccountID = @account_id;
 END//
