@@ -1,6 +1,6 @@
 CREATE TABLE Account (
   AccountID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  TimestampRecent  TIMESTAMP,
+  TimestampRecent TIMESTAMP,
   Delinquency INT,
   Balance DECIMAL(16, 2)
 );
@@ -13,6 +13,7 @@ CREATE TABLE User (
   Password VARCHAR(255),
   Address VARCHAR(255),
   AccountID INT,
+  UNIQUE (Username),
   FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
 );
 
