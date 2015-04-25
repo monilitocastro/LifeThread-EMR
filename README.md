@@ -15,3 +15,17 @@ do this to allow modularity.
 
 For controller.php, we must program this such that it will have both use of model and view. It brings information
 from the web pages to the model.
+
+The folder Bare files includes the index.php and m-v-c class files needed to set up
+the use case methods. View.php is set up so that a form is shown with reset and
+submit buttons.
+
+If multiple post backs are needed for index.php, it is apt to set a cookie variable
+to keep track of the state. Use model classes toCookie and fromCookie method
+to facilitate this.
+
+Calendar program is modified from cal.php which is an open source
+calendar php rendering program. It has been modified to include
+radio buttons, next and previous months button. Original repository is located at https://github.com/Goatella/PHP-Calendar
+
+

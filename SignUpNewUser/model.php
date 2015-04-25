@@ -1,5 +1,6 @@
 <?php
-class Model
+include_once "../BaseModel.php";
+class Model extends BaseModel
 {
     public $string;
  

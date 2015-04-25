@@ -1,7 +1,3 @@
-<html>
- <head><title>MVC programming style</title>
- </head>
- <body>
 <?php
 require_once("model.php");
 require_once("view.php");
@@ -14,7 +10,5 @@ if (isset($_GET['action']) && !empty($_GET['action'])) {
     $controller->{$_GET['action']}();
 }
  
-echo $view->output();
+echo $view->showPage();
 ?>
- </body>
- </html>
