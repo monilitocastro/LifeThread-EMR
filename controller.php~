@@ -3,10 +3,35 @@ class Controller
 {
     private $model;
  
-    public function __construct($model){
-        $this->model = $model;
+    public function __construct(&$model){
+        $this->model = &$model;
     }
-
+ 
+ public function askUserToChooseDifferently(){
+  $this->model->opState = "showThis";
+  $this->model->showThis = "<br/>&nbsp;<br/><center>Sorry but that user name or password are taken. Please choose another</center>";
+ }   
+    
+ public function welcomeTheUser(){
+  $Name = $_POST['Name'];
+  $Address = $_POST['Address'];
+  $Username = $_POST['Username'];
+  $Password = $_POST['Password'];
+    $this->model->opState = "showThis";
+    $this->model->showThis = "<br/>&nbsp;<br/><center>Welcome to LifeThread, ".$Name.".<br/> You live at ". $Address .".</center>";
+    //$UserID = $get_UserID_fromDB($Username, $Password);
+    //$this->model->toCookie("UserID", $UserID);
+    //setCookie("UserID", $UserID);
+ }      
+    
+ public function registerTheUser(){
+  $Username = $_POST['Username'];
+  $Name = $_POST['Name'];
+  $Address = $_POST['Address'];
+  $Password = $_POST['Password'];
+  $this->model->signUpNewUser($Name, $Username, $Password, $Address);
+  
+ }
  
     public function clicked() {
         $this->model->string = "Updated Data, thanks to MVC and PHP!";

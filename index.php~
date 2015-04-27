@@ -1,11 +1,34 @@
 <?php
-$model = new Model();
+require_once("model.php");
+require_once("view.php");
+require_once("controller.php");
+$model = new Model("Unknown");
 $controller = new Controller($model);
 $view = new View($controller, $model);
- 
+$showThis = ""; 
 if (isset($_GET['action']) && !empty($_GET['action'])) {
-    $controller->{$_GET['action']}();
+    $model->opState = "trunk";
+    
+    print $model->dbSuccess?'TRUE':'FALSE';
+    if( $model->userFilledRegistrationForm() &&
+        $_GET['action']=='SignUpNewUser' ){
+         $controller->registerTheUser();
+         print $model->opState;
+         if($model->dbSuccess==TRUE){
+          $controller->welcomeTheUser();
+          print $model->opState;
+         }else{
+          $controller->askUserToChooseDifferently();
+          print $model->opState;
+         }
+    print $model->opState;
+    }
+    print $model->opState;
+    $showThis = $view->showTemplate($_GET['action']);
+}else{
+ $showThis = $view->showTemplate("");
 }
- 
-echo $view->output();
+
+echo $showThis;
 ?>
+

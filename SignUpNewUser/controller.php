@@ -12,7 +12,7 @@ class Controller
   echo"<br>MYSQL CONNECTTODB PASS";
      $this->model->connectToDB();
      echo "<br/>pass";
-     $this->model->signUpNewUser('Patient', $Name, $Username, $Password, $Address);
+     $this->model->signUpNewUser($Name, $Username, $Password, $Address);
      $this->model->closeDBConnection();
     }
  

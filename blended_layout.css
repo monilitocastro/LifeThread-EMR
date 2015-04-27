@@ -3,7 +3,7 @@
 	 margin : 0;
 	 border : 0;
 }
-body.main{
+body{
 	 background-image :  url('background.png');
 	 background-attachment : fixed;
 	 background-size : 100% auto;

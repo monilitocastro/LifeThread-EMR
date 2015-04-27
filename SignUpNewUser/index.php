@@ -18,7 +18,8 @@ if (isset($_POST['Username']) &&
      echo "attempting to add new user.";
      $controller->newUser($_POST['Name'], $_POST['Username'], $_POST['Password'], $_POST['Address']);
      echo "<center>Thank you ".$_POST['Name'].". Redirecting...</center>";
-     echo "<meta http-equiv=\"refresh\" content=\"0; url=../\" target='_top'/>";
+     
+     //echo "<meta http-equiv=\"refresh\" content=\"0; url=../\" target='_top'/>";
     }else{
      echo $view->showPage();
     }

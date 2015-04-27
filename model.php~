@@ -1,25 +1,127 @@
 <?php
-include_once("BaseModel.php");
-class Model extends BaseModel
+class Model
 {
  public $attributes;
-
-  
+ public static $UserType;
+ public static $UserID;
+ public $servername;
+ private $conn;
+ public $useCaseContent;
+ public $dbSuccess;
+ public $showThis;
+ public $opState; // stands for operational state
  function __construct($ctype="Unknown"){
+  $this->opState = "_construct";
   $this->define($ctype);
+  $this->dbSuccess = TRUE;
  }
 
- public function createSideBar(){
-     $result = "";
-     foreach($this->model->attributes as $key => $value){
-     	if($value==1){
-     	 $linkTitle = $key;
-     	 $url = str_replace(' ', '', $key);
-     	 $result = $result. "<li><a href=\"".$url."/\" target=\"ContentIFrame\">".$linkTitle."</a></li>";
-     	}
-     }
-     return $result;
-    }
+ 
+ public function userFilledRegistrationForm(){
+     return (isset($_POST['Name']) &&
+     isset($_POST['Username']) &&
+     isset($_POST['Password']) &&
+     isset($_POST['Address']) &&
+     !empty($_POST['Name']) &&
+     !empty($_POST['Username']) &&
+     !empty($_POST['Password']) &&
+     !empty($_POST['Address'])
+     );
+ }
+ 
+ public function isPostBack(){
+  if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
+      return TRUE;
+  }
+  return FALSE;
+ }
+ 
+ public function signUpNewUser($Name, $Username, $Password, $Address){
+  $this->dbSuccess=FALSE;
+  $this->connectToDB();
+  $this->dbSuccess=TRUE;
+   $queryString = "call sign_up_patient( '".
+                  $Name
+                  ."', '".
+                  $Username
+                  ."', '".
+                  $Password
+                  ."', '".
+                  $Address
+                  ."')";
+ 
+  if(!$this->conn->query($queryString)){
+   print "Errormessage: " . $this->conn->error;
+   $this->dbSuccess=FALSE;
+  }
+  $this->closeDB();
+ }
+ 
+ public function connectToDB($servername='localhost',$username='root', $password=''){
+  
+  $this->servername = $servername;
+  $dbname = "LifeThread";
+ 
+  //Create connection
+  $this->conn = new mysqli($this->servername, $username, $password, $dbname);
+  
+  // Check connection
+  if ($this->conn->connect_error) {
+    die("Connection failed: " . $this->conn->connect_error );
+  }
+ }
+ 
+ public function closeDB(){
+  $this->conn->close();
+ }
+ 
+ function resetUserType($rtype="Unknown"){
+  $this->define($rtype);
+ }
+ 
+ public function set_UserType($uType){
+  $this->UserType=$uType;
+  toCookie("UserType", $uType);
+ }
+ 
+ public function set_UserID($uID){
+  $this->UserID = $uID;
+  $this->toCookie("UserID", $uID);
+ }
+ 
+ public function get_UserID_fromDB($Username, $Password){
+
+  $this->dbSuccess = FALSE;
+  $this->connectToDB();
+   
+  $queryString = "SELECT UserID FROM User WHERE Username='" .$Username."' AND Password='".$Password."';";
+
+  $result = $this->conn->query($queryString);
+  if($result->num_rows == 0){
+    $this->closeDB();
+    $this->dbSuccess = TRUE;
+    $row = $result->fetch_assoc();
+    return $row['UserID'];
+  }else{
+   $this->closeDB();
+   return "ERROR";
+  }
+ }
+ 
+ private function toCookie($cookie_name, $cookie_value){
+  setcookie($cookie_name, $cookie_value, time() + (86400), '/'); // 86400 = 1 day
+ }
+ 
+ public function fromCookie($cookie_name){
+  if(!isset($_COOKIE[$cookie_name]) || $_COOKIE[$cookie_name]=="UnknownUserID") {
+   $this->toCookie($cookie_name, "UnknownUserID" );
+   //setcookie($cookie_name, "Unknown", time() + (86400), '/'); // 86400 = 1 day
+   return $_COOKIE[$cookie_name];
+  } else {
+   return $_COOKIE[$cookie_name];
+  }
+ }
+ 
  private function define($type){
   $userType=$type;
   if(strcmp($type, "Unknown")==0){

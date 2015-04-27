@@ -5,44 +5,40 @@ class View
 {
     private $model;
     private $controller;
- 
-    public function __construct($controller,$model) {
-        $this->controller = $controller;
-        $this->model = $model;
+    
+    
+    public function __construct(&$controller,&$model) {
+        $this->controller = &$controller;
+        $this->model =& $model;
     }
     
     public function createSideBar(){
-     $result = $this->model->fromCookie("UserID")."<br>";
+    //print "createSideBar";
+     $result = $this->model->fromCookie('UserID')."ttyy<br>";
+     //print "createSideBar";
      foreach($this->model->attributes as $key => $value){
      	if($value==1){
      	 $linkTitle = $key;
      	 $url = str_replace(' ', '', $key);
-     	 $result = $result. "<li><a href=\"".$url."/\" target=\"ContentIFrame\">".$linkTitle."</a></li>";
+     	 $result = $result . "<li><a href=\"index.php?action=".$url."\" target=\"_top\">".$linkTitle."</a></li>";
      	}
      }
+     
      return $result;
     }
  
     public function output() {
-        return '<p><a href="mvc.php?action=clicked">' . $this->model->string . "</a></p>";
+        return '<p><a href="index.php?action=clicked">' . $this->model->string . "</a></p>";
     }
-    public function showLogo(){
-     return "<img src=\"logo.png\"></img>";
-    }
-    public function showContentIFrame(){
-     return "<iframe src=\"Authenticate/\" name=\"ContentIFrame\">"."</iframe>";
-    }
-    public function showTitle(){
-     return "LifeThread Electronic Medical Record Software";
-    }
-    public function showTemplate(){
+    public function showTemplate($usecase){
+     $this->model->useCaseContent = $usecase;
      return "<html>". $this->showPreBody() . $this->showBody() . "</html>";
     }
     public function showPreBody(){
      return "<head>
 	 <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">
 	 <link rel=\"stylesheet\" type=\"text/css\" href=\"blended_layout.css\">
-	 <title>".$this->showTitle()."</title>
+	 <title>LifeThread Electronic Medical Record Software</title>
 	 <meta name=\"description\" content=\"Write some words to describe your html page\">
          </head>";
     }
@@ -50,14 +46,38 @@ class View
      return "<body class=\"main\">" . "<div class=\"blended_grid\">". $this->showPageHeader(). $this->showPageLeftMenu(). $this->showPageContent(). $this->showPageFooter() ."</div>" . "</body>";
     }
     public function showPageHeader(){
-     return "<div class=\"pageHeader\">" . $this->showLogo() . "</div>";
+     return "<div class=\"pageHeader\"><img src=\"logo.png\"></img></div>";
     }
     public function showPageLeftMenu(){
      return "<div class=\"pageLeftMenu\">
 	    <ul>". $this->createSideBar() ."</ul>" ."</div>";
     }
+   
     public function showPageContent(){
-     return "<div class=\"pageContent\">".$this->showContentIFrame()."</div>";
+     $showThis=&$this->model->showThis;
+     $operation = & $this->model->opState;
+     
+     if($operation=='trunk'){
+      switch($this->model->useCaseContent){
+        case "Authenticate":
+        $showThis="<br/>&nbsp;<br/><div style=\"width: 200px; margin: 0 auto;\"><input type=\"textbox\" name='Username'><br/>
+         <input type='password' name='Password'><br/>
+         <input type='reset'><input type='submit' value='Log in'></div>";
+           break;
+        case "SignUpNewUser":
+        $showThis="<div style='width:300px;margin:0 auto;'><form action='index.php?action=SignUpNewUser' method='POST'>"."Please fill in the information:<BR/><BR/>Name:    <input type='textbox' name='Name'><br/>
+Username: <input type='textbox' name='Username'><br/>
+Password: <input type='password' name='Password'><br/>
+Address:  <input type='textbox' name='Address'><br/>"."<input type='reset' value='Reset'>
+       <input type='submit' value='Register new patient'>"."</form></div>";
+            break;
+        default:
+            break;
+      }
+     }elseif($operation=='showThis'){
+      
+     }
+     return "<div class=\"pageContent\">".$showThis."</div>";
     }
     public function showPageFooter(){
      return "<div class=\"pageFooter\">"."</div>";

@@ -13,25 +13,30 @@ class BaseModel{
   }
   return FALSE;
  }
- public function signUpNewUser($UserType, $Name, $Username, $Password, $Address){
+ public function signUpNewUser($Name, $Username, $Password, $Address){
  
  $queryString = <<< EOT
-INSERT INTO User($UserType, $Name, $Username, $Password, $Address);
+call sign_up_patient( $Name, $Username, $Password, $Address);
 EOT;
- $result = $this->conn->mysql_query($queryString);
- }
- public function connectToDB($servername="localhost",$username="root", $password=""){
-  $this->servername = $servername;
-  // Create connection
-  echo"<br>MYSQL PRECONNECT PASS";
-  $this->conn = new mysql_connect($this->servername, $username, $password);
-  echo"<br>MYSQL CONNECT PASS";
-  // Check connection
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+  if($this->conn->query($queryString)){
+   printf("Errormessage: %s\n", $mysqli->error);
   }
-  $result = $this->conn->mysql_query("use LifeThread;");
+  
  }
+ 
+ public function connectToDB($servername='localhost',$username='root', $password=''){
+  $this->servername = $servername;
+  $dbname = "LifeThread";
+ 
+  // Create connection
+  $this->conn = new mysqli($this->servername, $username, $password, $dbname);
+  
+  // Check connection
+  if ($this->conn->connect_error) {
+    die("Connection failed: " . $this->conn->connect_error );
+  }
+ }
+ 
  public function closeDBConnection(){
   $this->conn->close();
  }
