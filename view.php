@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <?php
 class View
 {
@@ -16,6 +17,7 @@ class View
         if($this->model->UserAttributes['UserType'] == 'Patient'){
             //just return patient name
             $result = $result . $this->model->PatientName;
+            $this->model->PatientID = $this->model->UserAttributes['UserID'];
         }elseif( isset($this->model->UserAttributes['UserType']) && ($this->model->UserAttributes['UserType'] != 'Patient')   ){
             //For everyone else
             $result = $result . "<li><a href=\"index.php?action=DefinePatient\" target=\"_top\">Define Patient</a></li>";
@@ -90,7 +92,10 @@ Address:  <input type='textbox' name='Address'><br/>"."<input type='reset' value
               header("Location: /"); /* Redirect browser */
               exit();
           case "ViewPrescription":
-              $showThis = $this->model->ViewPrescription();
+              $showThis = $showThis . $this->model->ViewPrescription();
+              break;
+          case "ViewAccountBalance":
+              $showThis = $this->model->ViewAccountBalance();
               break;
         default:
             break;
