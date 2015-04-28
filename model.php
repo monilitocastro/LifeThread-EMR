@@ -14,11 +14,10 @@ class Model
 
     function __construct($ctype="Unknown"){
         $this->PatientName = "_unknown";
-  $this->opState = "_construct";
-  $this->define($ctype);
-  $this->dbSuccess = TRUE;
-  $this->UserID = $this->fromCookie("UserID");
-        $willRefresh=false;
+        $this->opState = "_construct";
+        $this->define($ctype);
+        $this->dbSuccess = TRUE;
+        $this->UserAttributes['UserID'] = $this->fromCookie("UserID");
  }
 
     public function ViewPrescription(){
@@ -84,42 +83,6 @@ EOT;
             return "ERROR";
         }
     }
-    public function getUserTypeFromDB(){
-        $this->dbSuccess = FALSE;
-        $this->connectToDB();
-
-        $queryString = "SELECT UserType FROM User WHERE UserID='" .$this->UserID."';";
-
-        $result = $this->conn->query($queryString);
-        if($result->num_rows == 1){
-            $this->closeDB();
-            $this->dbSuccess = TRUE;
-            $row = $result->fetch_assoc();
-            $this->UserType=$row['UserType'];
-            return $this->Username;
-        }else{
-            $this->closeDB();
-            return "ERROR";
-        }
-    }
-    public function getUsernameFromDB(){
-        $this->dbSuccess = FALSE;
-        $this->connectToDB();
-
-        $queryString = "SELECT Username FROM User WHERE UserID='" .$this->UserID."';";
-
-        $result = $this->conn->query($queryString);
-        if($result->num_rows == 1){
-            $this->closeDB();
-            $this->dbSuccess = TRUE;
-            $row = $result->fetch_assoc();
-            $this->Username=$row['Username'];
-            return $this->Username;
-        }else{
-            $this->closeDB();
-            return "ERROR";
-        }
-    }
     public function get_UserID_fromDB($Username, $Password){
 
         $this->dbSuccess = FALSE;
@@ -132,7 +95,7 @@ EOT;
             $this->closeDB();
             $this->dbSuccess = TRUE;
             $row = $result->fetch_assoc();
-            $this->UserID = $row['UserID'];
+            $this->UserAttributes['UserID'] = $row['UserID'];
             return $this->UserID;
         }else{
             $this->closeDB();
@@ -169,10 +132,10 @@ EOT;
  }
  
  public function signUpNewUser($Name, $Username, $Password, $Address){
-  $this->dbSuccess=FALSE;
-  $this->connectToDB();
-  $this->dbSuccess=TRUE;
-   $queryString = "call sign_up_patient( '".
+    $this->dbSuccess=FALSE;
+    $this->connectToDB();
+    $this->dbSuccess=TRUE;
+    $queryString = "call sign_up_patient( '".
                   $Name
                   ."', '".
                   $Username
@@ -181,55 +144,42 @@ EOT;
                   ."', '".
                   $Address
                   ."')";
- 
-  if(!$this->conn->query($queryString)){
-   print "Errormessage: " . $this->conn->error;
-   $this->dbSuccess=FALSE;
-  }
-  $this->closeDB();
+     if(!$this->conn->query($queryString)){
+         print "Errormessage: " . $this->conn->error;
+         $this->dbSuccess=FALSE;
+     }
+     $this->closeDB();
  }
- 
+
  public function connectToDB($servername='localhost',$username='root', $password=''){
   
-  $this->servername = $servername;
-  $dbname = "LifeThread";
- 
-  //Create connection
-  $this->conn = new mysqli($this->servername, $username, $password, $dbname);
-  
-  // Check connection
-  if ($this->conn->connect_error) {
-    die("Connection failed: " . $this->conn->connect_error );
-  }
+      $this->servername = $servername;
+      $dbname = "LifeThread";
+
+      //Create connection
+      $this->conn = new mysqli($this->servername, $username, $password, $dbname);
+
+      // Check connection
+      if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error );
+      }
  }
  
  public function closeDB(){
-  $this->conn->close();
+    $this->conn->close();
  }
- 
- public function set_UserType($uType){
-  $this->UserType=$uType;
-  toCookie("UserType", $uType);
- }
- 
- public function set_UserID($uID){
-  $this->UserID = $uID;
-  $this->toCookie("UserID", $uID);
- }
- 
-
  
  public function toCookie($cookie_name, $cookie_value){
-  setcookie($cookie_name, $cookie_value, time() + (86400), '/'); // 86400 = 1 day
+    setcookie($cookie_name, $cookie_value, time() + (86400), '/'); // 86400 = 1 day
  }
  
  public function fromCookie($cookie_name){
-  if(!isset($_COOKIE[$cookie_name]) ) {
-   $this->toCookie($cookie_name, "Unknown" );
-   return $_COOKIE[$cookie_name];
-  } else {
-   return $_COOKIE[$cookie_name];
-  }
+    if(!isset($_COOKIE[$cookie_name]) ) {
+        $this->toCookie($cookie_name, "Unknown" );
+    return $_COOKIE[$cookie_name];
+    } else {
+    return $_COOKIE[$cookie_name];
+    }
  }
  
  public function define($type){
