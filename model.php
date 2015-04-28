@@ -9,12 +9,6 @@ class Model
     public $dbSuccess;
     public $showThis;
     public $opState; // stands for operational state
-    public $UserType;
-    public $UserID;
-    public $Username;
-    public $Name;
-    public $Address;
-    public $Password;
     public $UserAttributes;
     public $PatientName;
 
@@ -27,14 +21,42 @@ class Model
         $willRefresh=false;
  }
 
-    public function isPatient(){
+    public function ViewPrescription(){
+        $this->dbSuccess = FALSE;
+        $this->connectToDB();
+        /*From developer journal
+         * SELECT Prescription.Name, Timestamp From Prescription, Medical_Record, User
+         * WHERE UserID=PatientID and Medical_Record.RxNumber = Prescription.RxNumber
+         * ORDER BY Medical_Record.Timestamp DESC
+         *
+         * */
+
+        $queryString = <<<EOT
+SELECT Prescription.Name, Timestamp
+        FROM Prescription, MedicalRecord, User
+        WHERE User.UserID='1' AND MedicalRecord.RxNumber = Prescription.RxNumber
+        ORDER BY MedicalRecord.Timestamp DESC;
+EOT;
+
+
+        $result = $this->conn->query($queryString);
+        while($row = $result->fetch_assoc())
+        {
+            $this->UserAttributes=$row;
+            $this->Name=$row['Name'];
+            $this->UserID=$row['UserID'];
+            //$this->Username=$row['Username'];
+           //    $this->Address=$row['Address'];
+            //$this->Password=$row['Password'];
+        }
 
     }
+
     public function getAllUserAttributesFromDB(){
         $this->dbSuccess = FALSE;
         $this->connectToDB();
 
-        $queryString = "SELECT * FROM User WHERE UserID='" .$this->UserID."';";
+        $queryString = "SELECT * FROM User WHERE UserID='" .$this->UserAttributes['UserID']."';";
 
         $result = $this->conn->query($queryString);
         if($result->num_rows == 1){
@@ -183,10 +205,6 @@ class Model
  
  public function closeDB(){
   $this->conn->close();
- }
- 
- function resetUserType($rtype="Unknown"){
-  $this->define($rtype);
  }
  
  public function set_UserType($uType){

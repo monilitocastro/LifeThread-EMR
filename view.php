@@ -39,7 +39,7 @@ class View
  
 
     public function showTemplate($usecase){
-     $this->model->useCaseContent = $usecase;
+        $this->model->useCaseContent = $usecase;
         $concatString = "<html>". $this->showPreBody() . $this->showBody() . "</html>";
         return $concatString;
     }
@@ -69,26 +69,29 @@ class View
      
      if($operation=='trunk'){
       switch($this->model->useCaseContent){
-        case "Authenticate":
+          case "Authenticate":
         $showThis=
             "<br/>&nbsp;<br/><div style='width:300px;margin:0 auto;'><form action='index.php?action=Authenticate' method='POST'><input type=\"textbox\" name='Username'><br/>
          <input type='password' name='Password'><br/>
          <input type='reset'><input type='submit' value='Log in'></div>";
            break;
-        case "SignUpNewUser":
+            case "SignUpNewUser":
         $showThis="<div style='width:300px;margin:0 auto;'><form action='index.php?action=SignUpNewUser' method='POST'>"."Please fill in the information:<BR/><BR/>Name:    <input type='textbox' name='Name'><br/>
 Username: <input type='textbox' name='Username'><br/>
 Password: <input type='password' name='Password'><br/>
 Address:  <input type='textbox' name='Address'><br/>"."<input type='reset' value='Reset'>
        <input type='submit' value='Register new patient'>"."</form></div>";
             break;
-       case "DefinePatient":
+          case "DefinePatient":
            $showThis = $this->showSearchTool("DefinePatient", "Name");
               break;
-        case "Logout";
+          case "Logout":
               $showThis=$this->model->toCookie('UserID','Unknown');
               $this->model->define('Unknown');
-
+              header("Location: /"); /* Redirect browser */
+              exit();
+          case "ViewPrescription":
+              $showThis = $this->model->ViewPrescription();
               break;
         default:
             break;

@@ -6,34 +6,31 @@ $model = new Model("Unknown");
 $controller = new Controller($model);
 $view = new View($controller, $model);
 $showThis = "";
-if(isset($_COOKIE['UserID'])){
-    $model->getAllUserAttributesFromDB();
-}
-if(isset($model->UserAttributes['UserType'])){
-    $model->define($model->UserAttributes['UserType']);
-}
-if (isset($_GET['action']) && !empty($_GET['action'])) {
-    $model->opState = "trunk";
-    
-    if( $model->userFilledRegistrationForm() &&
-        $_GET['action']=='SignUpNewUser' ){
-         $controller->registerTheUser();
 
-         if($model->dbSuccess==TRUE){
 
-          $controller->welcomeTheUser();
-             // Determine if user type is Patient or not
-         }else{
-          $controller->askUserToChooseDifferently();
-         }
-    }elseif($model->userFilledLogin() &&
-         $_GET['action']='Authenticate'){
-        $controller->loginUser();
-       //   print $model->UserAttributes['Name'];
+if( $model->userFilledRegistrationForm() &&
+    $_GET['action']=='SignUpNewUser' ){
+    $controller->registerTheUser();
+    $controller->UserTypeIsNowKnown();
+    if($model->dbSuccess==TRUE){
+        $controller->welcomeTheUser();
+        $controller->UserTypeIsNowKnown();
+    }else{
+        $controller->askUserToChooseDifferently();
     }
+}elseif($model->userFilledLogin() &&
+    $_GET['action']='Authenticate'){
+    $controller->loginUser();
+    //   print $model->UserAttributes['Name'];
+}
+
+$controller->getAllCookies();
+$controller->UserTypeIsNowKnown();
+if (isset($_GET['action']) && !empty($_GET['action'])) {
+
     $showThis = $view->showTemplate($_GET['action']);
 }else{
- $showThis = $view->showTemplate("");
+    $showThis = $view->showTemplate("");
 }
 
 print $showThis;
