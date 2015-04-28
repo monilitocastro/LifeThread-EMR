@@ -60,6 +60,13 @@ class Controller
         $Name = $_POST['Name'];
         $Address = $_POST['Address'];
         $Password = $_POST['Password'];
+        $this->model->updateUserInformation($Name, $Username, $Password, $Address);
+    }
+    public function updateAccountInformation(){
+        $Username = $_POST['Username'];
+        $Name = $_POST['Name'];
+        $Address = $_POST['Address'];
+        $Password = $_POST['Password'];
         $this->model->signUpNewUser($Name, $Username, $Password, $Address);
     }
  

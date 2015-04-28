@@ -5,9 +5,9 @@
      font-family: Georgia, serif;
 }
 body{
-	 background-image :  url('background.png');
-	 background-attachment : fixed;
-	 background-size : 100% auto;
+	 background-image :  url('background.jpg');
+	 background-attachment : scroll;
+	 background-size : cover;
 	 
 }
 .blended_grid{
@@ -17,7 +17,7 @@ body{
 	 margin : 30px auto 0 auto;
 }
 .pageHeader{
-	 background-color : rgba(255,255,255,0.85);
+	 background-color : rgba(255,255,255,0.0);
 	 float : left;
 	 clear : none;
 	 height : 200px;

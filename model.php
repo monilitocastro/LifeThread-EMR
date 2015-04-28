@@ -22,6 +22,9 @@ class Model
         $willRefresh=false;
  }
 
+    public function UpdateAccountInformation(){
+
+    }
     public function ViewAccountBalance(){
         $resultString = "";
         $this->dbSuccess = FALSE;
@@ -126,8 +129,8 @@ EOT;
             $this->closeDB();
             $this->dbSuccess = TRUE;
             $row = $result->fetch_assoc();
-            $this->UserType=$row['UserType'];
-            return $this->Username;
+            $this->UserAttributes['UserType']=$row['UserType'];
+            return $this->UserAttributes['Username'];
         }else{
             $this->closeDB();
             return "ERROR";
@@ -199,12 +202,12 @@ EOT;
   return FALSE;
  }
  
- public function signUpNewUser($Name, $Username, $Password, $Address){
-  $this->dbSuccess=FALSE;
-  $this->connectToDB();
-  $this->dbSuccess=TRUE;
-   $queryString = "call sign_up_patient( '".
-                  $Name
+    public function signUpNewUser($Name, $Username, $Password, $Address){
+        $this->dbSuccess=FALSE;
+        $this->connectToDB();
+        $this->dbSuccess=TRUE;
+        $queryString = "call sign_up_patient( '".
+                          $Name
                   ."', '".
                   $Username
                   ."', '".
@@ -219,6 +222,10 @@ EOT;
   }
   $this->closeDB();
  }
+
+    public function updateUserInformation($Name, $Username, $Password, $Address){
+        //this will be alot like sign up new user method
+    }
  
  public function connectToDB($servername='localhost',$username='root', $password=''){
   
@@ -292,7 +299,7 @@ EOT;
    $this->attributes = array(
      "Authenticate" => 0,
      "Logout"       => 1,
-     "Sign Up New User" => 1,
+     "Sign Up New User" => 0,
      "Schedule Appointment" => 1,
      "Cancel Appointment" => 1,
      "Prescribe Medication" => 0,
@@ -474,7 +481,7 @@ EOT;
    );
   }
   else{
-    print "ERROR: UKNOWN USER TYPE IN CONSTRUCTION OF BaseUser.";
+    print "ERROR: UKNOWN USER TYPE IN CONSTRUCTION OF BaseUser: '".$type."'";
   }
  }
  

@@ -5,22 +5,57 @@ class View
 {
     private $model;
     private $controller;
-    
+    private $showThis;
+    private $refShowThis;
     
     public function __construct(&$controller,&$model) {
         $this->controller = &$controller;
         $this->model =& $model;
     }
 
+    public function UserInformationForm($HeadingText, $ActionText,$SubmissionText){
+        $Username = "";
+        $Name = "";
+        $Password = "";
+        $Address = "";
+        if( !isset($this->model->UserAttributes['Name']) &&
+            !isset($this->model->UserAttributes['Username']) &&
+            !isset($this->model->UserAttributes['Password']) &&
+            !isset($this->model->UserAttributes['Address']) ) {
+        }else{
+            if($_GET['action']=='SignUpNow'){
+                $Username = "";
+                $Name = "";
+                $Password = "";
+                $Address = "";
+            }elseif($_GET['action']=='UpdateAccountInformation'){
+                $Name = $this->model->UserAttributes['Name'];
+                $Username = $this->model->UserAttributes['Username'];
+                $Password = $this->model->UserAttributes['Password'];
+                $Address = $this->model->UserAttributes['Address'];
+            }
+
+        }
+$result =<<<EOT
+<br/><br/><div style='width:300px;margin:0 auto;'>
+<form action='index.php?action=$ActionText' method='POST'>$HeadingText<BR/><BR/>
+Name: <input type='textbox' name='Name' value='$Name'><br/>
+Username: <input type='textbox' name='Username' value='$Username'><br/>
+Password: <input type='password' name='Password' value='$Password'><br/>
+Address:  <input type='textbox' name='Address' value='$Address'><br/><input type='reset' value='Reset'>
+<input type='submit' value='$SubmissionText'></form></div>
+EOT;
+        return $result;
+    }
     public function PatientNameView(){
         $result = "";
-        if($this->model->UserAttributes['UserType'] == 'Patient'){
+        if( isset($this->model->UserAttributes['UserType']) && ($this->model->UserAttributes['UserType'] != 'Patient')   ){
+            //For everyone else
+            $result = $result . "<li><a href=\"index.php?action=DefinePatient\" target=\"_top\">Define Patient</a></li>";
+        }else if($this->model->UserAttributes['UserType'] == 'Patient'){
             //just return patient name
             $result = $result . $this->model->PatientName;
             $this->model->PatientID = $this->model->UserAttributes['UserID'];
-        }elseif( isset($this->model->UserAttributes['UserType']) && ($this->model->UserAttributes['UserType'] != 'Patient')   ){
-            //For everyone else
-            $result = $result . "<li><a href=\"index.php?action=DefinePatient\" target=\"_top\">Define Patient</a></li>";
         }
         return $result;
     }
@@ -63,12 +98,26 @@ class View
      return "<div class=\"pageLeftMenu\">
 	    <ul>". $this->createSideBar() ."</ul>" ."</div>";
     }
+
+    public function GuardAgainstHacking(){
+
+        $tempArr1 = $this->model->attributes;
+        foreach($tempArr1 as $key => $value){
+            $tempArr1[str_replace(' ', '', $key)] = $value;
+        }
+        if( $_GET['action'] != 'DefinePatient' && $tempArr1[$_GET['action']]==0 ){
+            return true;
+        }
+        return false;
+    }
    
     public function showPageContent(){
-     $showThis=&$this->model->showThis;
+     $this->showThis=&$this->model->showThis;
      $operation = & $this->model->opState;
-     
      if($operation=='trunk'){
+       if($this->GuardAgainstHacking()){       //TRUE if an attempt is made to see use cases with permission
+           return "&nbsp;<br/>&nbsp;<br/><center><h2>Welcome</h2></center>";
+       }
       switch($this->model->useCaseContent){
           case "Authenticate":
         $showThis=
@@ -77,25 +126,24 @@ class View
          <input type='reset'><input type='submit' value='Log in'></div>";
            break;
             case "SignUpNewUser":
-        $showThis="<div style='width:300px;margin:0 auto;'><form action='index.php?action=SignUpNewUser' method='POST'>"."Please fill in the information:<BR/><BR/>Name:    <input type='textbox' name='Name'><br/>
-Username: <input type='textbox' name='Username'><br/>
-Password: <input type='password' name='Password'><br/>
-Address:  <input type='textbox' name='Address'><br/>"."<input type='reset' value='Reset'>
-       <input type='submit' value='Register new patient'>"."</form></div>";
+                $showThis=$this->UserInformationForm("Please fill in the information: ","SignUpNewUser","Sign Up");
             break;
           case "DefinePatient":
-           $showThis = $this->showSearchTool("DefinePatient", "Name");
-              break;
+                $this->showThis = $this->showSearchTool("DefinePatient", "Name");
+                break;
           case "Logout":
               $showThis=$this->model->toCookie('UserID','Unknown');
               $this->model->define('Unknown');
               header("Location: /"); /* Redirect browser */
               exit();
           case "ViewPrescription":
-              $showThis = $showThis . $this->model->ViewPrescription();
+              $showThis = $this->showThis . $this->model->ViewPrescription();
               break;
           case "ViewAccountBalance":
               $showThis = $this->model->ViewAccountBalance();
+              break;
+          case "UpdateAccountInformation":
+              $showThis = $this->UserInformationForm("Please modify the necessary fields: ", "UpdateAccountInformation", "Update");
               break;
         default:
             break;

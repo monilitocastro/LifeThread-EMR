@@ -9,7 +9,7 @@ $showThis = "";
 
 
 if( $model->userFilledRegistrationForm() &&
-    $_GET['action']=='SignUpNewUser' ){
+    $_GET['action']=='SignUpNewUser' )         {
     $controller->registerTheUser();
     $controller->UserTypeIsNowKnown();
     if($model->dbSuccess==TRUE){
@@ -18,6 +18,18 @@ if( $model->userFilledRegistrationForm() &&
     }else{
         $controller->askUserToChooseDifferently();
     }
+
+}elseif( $model->userFilledRegistrationForm() &&
+    $_GET['action']=='UpdateAccountInformation' )         {
+    //$controller->updateAccountInformation();
+    $controller->UserTypeIsNowKnown();
+    if($model->dbSuccess==TRUE){
+        $controller->welcomeTheUser();
+        $controller->UserTypeIsNowKnown();
+    }else{
+        $controller->askUserToChooseDifferently();
+    }
+
 }elseif($model->userFilledLogin() &&
     $_GET['action']='Authenticate'){
     $controller->loginUser();
