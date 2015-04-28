@@ -178,10 +178,10 @@ EOT;
         $this->toCookie($cookie_name, "Unknown" );
     return $_COOKIE[$cookie_name];
     } else {
-    return $_COOKIE[$cookie_name];
-    }
+        return "Unknown";
+  }
  }
- 
+
  public function define($type){
   $userType=$type;
   if(strcmp($type, "Unknown")==0){
